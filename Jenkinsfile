@@ -91,6 +91,7 @@ node ('jenkins-slave') {
         sh 'npm run lint'
         sh 'npm run coverage'
         sh 'npm run coverageReport'
+        sh 'npm run coverageReportHTML'
 
         junit 'target/report.xml'
         cobertura coberturaReportFile: 'coverage/cobertura-coverage.xml',
@@ -105,6 +106,13 @@ node ('jenkins-slave') {
           lineCoverageTargets: '80, 0, 0',
           methodCoverageTargets: '80, 0, 0',
           maxNumberOfBuilds: 0
+      }
+    }
+
+    stage('sonar') {
+      def scannerHome = tool 'sonar-scanner-maven-install'
+      withSonarQubeEnv('sonar-default-server') {
+        sh "${scannerHome}/bin/sonar-scanner"
       }
     }
 
